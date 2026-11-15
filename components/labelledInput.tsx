@@ -1,7 +1,7 @@
 'use client';
 import { cn } from "@/lib/utils";
-import { Input } from "./input";
-import { Label } from "./label";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
 
 interface LabelledInputProps {
     label: string;

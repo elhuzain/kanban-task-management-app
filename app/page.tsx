@@ -1,6 +1,11 @@
-import Presentation from "@/components/ui/presentation";
+import { ContainerProvider } from "@/providers/container";
+
 export default function Home() {
   return (
-    <Presentation />
+    <ContainerProvider>
+      <main>
+        
+      </main>
+    </ContainerProvider>
   );
 }

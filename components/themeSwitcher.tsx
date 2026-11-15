@@ -1,8 +1,8 @@
 'use client'
 import { getCurrentTheme, switchTheme } from "@/lib/utils"
 import { useEffect, useState } from "react"
-import { Checkbox } from "./checkbox"
-import { Label } from "./label"
+import { Checkbox } from "./ui/checkbox"
+import { Label } from "./ui/label"
 import { cn } from "@/lib/utils"
 import Image from "next/image"
 const ThemeSwitcher = () => {

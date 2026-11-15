@@ -1,11 +1,14 @@
-import { Label } from "./label";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "./select";
+import { useContainer } from "@/providers/container";
+import { Label } from "./ui/label";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "./ui/select";
 
-const StatusSelector = () => {
+const StatusSelector = ({ label, task }: { label: string, task: Task }) => {
+    const { setStatus } = useContainer();
+
     return (
         <Label className="flex flex-col gap-2 text-start items-start">
-            <span>Status</span>
-            <Select>
+            <span className="text-white">{label}</span>
+            <Select value={task.status.toLowerCase()} onValueChange={(value) => setStatus(task.id, value)}>
                 <SelectTrigger className="w-full cursor-pointer hover:border-primary transition-colors duration-300">
                     <SelectValue placeholder="Select a status" />
                 </SelectTrigger>
