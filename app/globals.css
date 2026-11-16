@@ -71,8 +71,11 @@
   --text-title: #000112;
   --secondary-button: #635FC71A;
   --secondary-button-hover: #635FC740;
+  --scrollbar-thumb: color-mix(in srgb, var(--text-secondary) 40%, transparent);
+  --scrollbar-thumb-hover: var(--primary);
 
   --radius: 0.625rem;
+  color-scheme: light;
 }
 
 .dark {
@@ -89,7 +92,10 @@
   --text-title: #fff;
   --secondary-button: #fff;
   --secondary-button-hover: #fff;
+  --scrollbar-thumb: color-mix(in srgb, var(--text-secondary) 35%, transparent);
+  --scrollbar-thumb-hover: var(--primary);
 
+  color-scheme: dark;
 }
 
 @layer base {
@@ -124,4 +130,33 @@ button svg {
   stroke: var(--primary) !important;
   stroke-width: 3px !important;
   opacity: 1 !important;
+}
+
+/* Scrollbars
+ * Standard properties cover Firefox and Chromium 121+ (which then ignore the
+ * ::-webkit-* rules); the ::-webkit-* rules cover Safari and older Chromium. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb);
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scrollbar-thumb-hover);
 }

@@ -18,7 +18,7 @@ const AddColumnButton = () => {
 
     return (
         <Dialog>
-            <DialogTrigger>
+            <DialogTrigger className="text-primary bg-bg/30 min-w-[280px] max-w-[280px] mt-12 rounded-md">
                 + New Column
             </DialogTrigger>
             <DialogContent>
@@ -37,7 +37,7 @@ const AddColumnButton = () => {
                             </Button>
                         </DialogClose>
                     </DialogFooter>
-                </DialogHeader> 
+                </DialogHeader>
             </DialogContent>
         </Dialog>
     )

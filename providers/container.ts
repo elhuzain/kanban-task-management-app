@@ -10,7 +10,7 @@ type ContainerContextValue = {
     selectBoard: (boardId: string) => void;
     createBoard: (name: string, columnNames?: string[]) => void;
     addColumn: (boardId: string, name: string) => void;
-    createTask: (boardId: string, title: string, description: string, status?: string) => void;
+    createTask: (boardId: string, title: string, description: string, status?: string, subtaskTitles?: string[]) => void;
     setStatus: (taskId: string, newStatus: string) => void;
     addSubtask: (taskId: string, subtaskTitle: string) => void;
     checkSubtask: (taskId: string, subtaskId: string, isCompleted: boolean) => void;
@@ -117,7 +117,13 @@ export const ContainerProvider = ({ children }: { children: ReactNode }) => {
         );
     };
 
-    const createTask = (boardId: string, title: string, description: string, status?: string) => {
+    const createTask = (
+        boardId: string,
+        title: string,
+        description: string,
+        status?: string,
+        subtaskTitles: string[] = []
+    ) => {
         setBoards((prevBoards) =>
             prevBoards.map((board) => {
                 if (board.id !== boardId || board.columns.length === 0) return board;
@@ -132,7 +138,11 @@ export const ContainerProvider = ({ children }: { children: ReactNode }) => {
                     title,
                     description,
                     status: targetColumnId,
-                    subtasks: [],
+                    subtasks: subtaskTitles.map((subtaskTitle) => ({
+                        id: generateId(),
+                        title: subtaskTitle,
+                        isCompleted: false,
+                    })),
                 };
 
                 return {
