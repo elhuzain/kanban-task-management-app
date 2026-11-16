@@ -12,6 +12,8 @@ type ContainerContextValue = {
     addColumn: (boardId: string, name: string) => void;
     createTask: (boardId: string, title: string, description: string, status?: string, subtaskTitles?: string[]) => void;
     setStatus: (taskId: string, newStatus: string) => void;
+    /** Moves a task to `destinationColumnId` at `destinationIndex` (used by drag and drop). */
+    moveTask: (taskId: string, destinationColumnId: string, destinationIndex: number) => void;
     addSubtask: (taskId: string, subtaskTitle: string) => void;
     checkSubtask: (taskId: string, subtaskId: string, isCompleted: boolean) => void;
 };
@@ -176,6 +178,28 @@ export const ContainerProvider = ({ children }: { children: ReactNode }) => {
         );
     };
 
+    const moveTask = (taskId: string, destinationColumnId: string, destinationIndex: number) => {
+        setBoards((prevBoards) =>
+            prevBoards.map((board) => {
+                const task = board.columns.flatMap((column) => column.tasks).find((t) => t.id === taskId);
+                if (!task || !board.columns.some((column) => column.id === destinationColumnId)) return board;
+
+                const movedTask = { ...task, status: destinationColumnId };
+                return {
+                    ...board,
+                    columns: board.columns.map((column) => {
+                        const remaining = column.tasks.filter((t) => t.id !== taskId);
+                        if (column.id !== destinationColumnId) return { ...column, tasks: remaining };
+
+                        const tasks = [...remaining];
+                        tasks.splice(destinationIndex, 0, movedTask);
+                        return { ...column, tasks };
+                    }),
+                };
+            })
+        );
+    };
+
     const addSubtask = (taskId: string, subtaskTitle: string) => {
         setBoards((prevBoards) =>
             updateTask(prevBoards, taskId, (task) => ({
@@ -199,7 +223,7 @@ export const ContainerProvider = ({ children }: { children: ReactNode }) => {
     return createElement(
         ContainerContext.Provider,
         {
-            value: { boards, tasks, selectedBoard, selectBoard, createBoard, addColumn, createTask, setStatus, addSubtask, checkSubtask },
+            value: { boards, tasks, selectedBoard, selectBoard, createBoard, addColumn, createTask, setStatus, moveTask, addSubtask, checkSubtask },
         },
         children
     );

@@ -3,11 +3,16 @@ import { Label } from "./ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import SubtaskCheckbox from "./subtaskCheckbox";
 import { useContainer } from "@/providers/container";
+import type { DraggableProvidedDragHandleProps } from "@hello-pangea/dnd";
+import { GripVertical } from "lucide-react";
 
 const Task = ({
-    task
+    task,
+    dragHandleProps,
 }: {
     task: Task
+    /** When provided, renders a grip handle that starts the drag. */
+    dragHandleProps?: DraggableProvidedDragHandleProps | null
 }) => {
     const { title } = task;
     const { selectedBoard, setStatus } = useContainer();
@@ -18,10 +23,21 @@ const Task = ({
     return (
 
         <Dialog>
-            <DialogTrigger className="group cursor-pointer bg-bg p-5 flex flex-col items-start gap-2 h-fit rounded-sm w-full">
-                <h3 className="text-text-title heading-m group-hover:text-primary transition-colors duration-300">{title}</h3>
-                <p className="text-text-secondary body-bold">{completedCount} of {task.subtasks.length} subtasks</p>
-            </DialogTrigger>
+            <div className="flex items-stretch bg-bg rounded-sm w-full">
+                <DialogTrigger className="group cursor-pointer p-5 pr-2 flex flex-col items-start gap-2 h-fit flex-1 min-w-0 text-left">
+                    <h3 className="text-text-title heading-m group-hover:text-primary transition-colors duration-300">{title}</h3>
+                    <p className="text-text-secondary body-bold">{completedCount} of {task.subtasks.length} subtasks</p>
+                </DialogTrigger>
+                {dragHandleProps && (
+                    <div
+                        {...dragHandleProps}
+                        aria-label={`Drag ${title}`}
+                        className="flex items-center px-2 text-text-secondary hover:text-primary cursor-grab active:cursor-grabbing rounded-r-sm transition-colors duration-300 focus-visible:outline-2 focus-visible:outline-primary"
+                    >
+                        <GripVertical className="size-5" />
+                    </div>
+                )}
+            </div>
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>{title}</DialogTitle>
