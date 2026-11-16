@@ -14,6 +14,9 @@ type ContainerContextValue = {
     setStatus: (taskId: string, newStatus: string) => void;
     /** Moves a task to `destinationColumnId` at `destinationIndex` (used by drag and drop). */
     moveTask: (taskId: string, destinationColumnId: string, destinationIndex: number) => void;
+    /** Updates a task's fields. Subtasks are matched by id so existing ones keep their completion state. */
+    editTask: (taskId: string, changes: { title: string; description: string; status: string; subtasks: { id: string; title: string }[] }) => void;
+    deleteTask: (taskId: string) => void;
     addSubtask: (taskId: string, subtaskTitle: string) => void;
     checkSubtask: (taskId: string, subtaskId: string, isCompleted: boolean) => void;
 };
@@ -200,6 +203,55 @@ export const ContainerProvider = ({ children }: { children: ReactNode }) => {
         );
     };
 
+    const editTask: ContainerContextValue["editTask"] = (taskId, { title, description, status, subtasks }) => {
+        setBoards((prevBoards) =>
+            prevBoards.map((board) => {
+                const task = board.columns.flatMap((column) => column.tasks).find((t) => t.id === taskId);
+                if (!task) return board;
+
+                const newStatus = board.columns.some((column) => column.id === status) ? status : task.status;
+                const updatedTask: Task = {
+                    ...task,
+                    title,
+                    description,
+                    status: newStatus,
+                    subtasks: subtasks.map(({ id, title: subtaskTitle }) => ({
+                        id,
+                        title: subtaskTitle,
+                        isCompleted: task.subtasks.find((s) => s.id === id)?.isCompleted ?? false,
+                    })),
+                };
+
+                return {
+                    ...board,
+                    columns: board.columns.map((column) => {
+                        // Same column: update in place to keep its position
+                        if (newStatus === task.status) {
+                            return { ...column, tasks: column.tasks.map((t) => (t.id === taskId ? updatedTask : t)) };
+                        }
+                        // Status changed: move to the end of the new column
+                        const remaining = column.tasks.filter((t) => t.id !== taskId);
+                        return column.id === newStatus
+                            ? { ...column, tasks: [...remaining, updatedTask] }
+                            : { ...column, tasks: remaining };
+                    }),
+                };
+            })
+        );
+    };
+
+    const deleteTask = (taskId: string) => {
+        setBoards((prevBoards) =>
+            prevBoards.map((board) => ({
+                ...board,
+                columns: board.columns.map((column) => ({
+                    ...column,
+                    tasks: column.tasks.filter((t) => t.id !== taskId),
+                })),
+            }))
+        );
+    };
+
     const addSubtask = (taskId: string, subtaskTitle: string) => {
         setBoards((prevBoards) =>
             updateTask(prevBoards, taskId, (task) => ({
@@ -223,7 +275,7 @@ export const ContainerProvider = ({ children }: { children: ReactNode }) => {
     return createElement(
         ContainerContext.Provider,
         {
-            value: { boards, tasks, selectedBoard, selectBoard, createBoard, addColumn, createTask, setStatus, moveTask, addSubtask, checkSubtask },
+            value: { boards, tasks, selectedBoard, selectBoard, createBoard, addColumn, createTask, setStatus, moveTask, editTask, deleteTask, addSubtask, checkSubtask },
         },
         children
     );
