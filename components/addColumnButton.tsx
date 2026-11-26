@@ -23,9 +23,9 @@ const AddColumnButton = () => {
             </DialogTrigger>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Create a new board</DialogTitle>
+                    <DialogTitle>Add a new column</DialogTitle>
 
-                    <LabelledInput name="" placeholder="" label="Board Name" value={columnName} onChange={(e) => setColumnName(e.target.value)} />
+                    <LabelledInput name="" placeholder="" label="Column Name" value={columnName} onChange={(e) => setColumnName(e.target.value)} />
 
                     <DialogFooter>
                         <DialogClose className="w-full">
