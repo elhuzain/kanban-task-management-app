@@ -19,6 +19,9 @@ type ContainerContextValue = {
     deleteTask: (taskId: string) => void;
     addSubtask: (taskId: string, subtaskTitle: string) => void;
     checkSubtask: (taskId: string, subtaskId: string, isCompleted: boolean) => void;
+    isSidebarVisible: boolean;
+    hideSidebar: () => void;
+    showSidebar: () => void;
 };
 
 const generateId = () => crypto.randomUUID();
@@ -88,6 +91,7 @@ const ContainerContext = createContext<ContainerContextValue | null>(null);
 export const ContainerProvider = ({ children }: { children: ReactNode }) => {
     const [boards, setBoards] = useState<Board[]>(initialBoards);
     const [selectedBoardId, setSelectedBoardId] = useState<string | undefined>(initialBoards[0]?.id);
+    const [isSidebarVisible, setIsSidebarVisible] = useState<boolean>(true);
 
     const selectedBoard = boards.find((board) => board.id === selectedBoardId);
 
@@ -272,10 +276,18 @@ export const ContainerProvider = ({ children }: { children: ReactNode }) => {
         );
     };
 
+    const hideSidebar = () => {
+        setIsSidebarVisible(false);
+    }
+
+    const showSidebar = () => {
+        setIsSidebarVisible(true);
+    }
+
     return createElement(
         ContainerContext.Provider,
         {
-            value: { boards, tasks, selectedBoard, selectBoard, createBoard, addColumn, createTask, setStatus, moveTask, editTask, deleteTask, addSubtask, checkSubtask },
+            value: { boards, tasks, selectedBoard, selectBoard, createBoard, addColumn, createTask, setStatus, moveTask, editTask, deleteTask, addSubtask, checkSubtask, isSidebarVisible, hideSidebar, showSidebar },
         },
         children
     );
