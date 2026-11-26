@@ -1,3 +1,5 @@
+declare module '*.css'
+
 type Theme = 'dark' | 'light' | 'system'
 
 type SubTask = {

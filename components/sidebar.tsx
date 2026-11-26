@@ -14,8 +14,8 @@ const Sidebar = () => {
     return <>
         <aside className={cn("transition-all duration-300 bg-bg h-dvh border-r border-lines py-8 flex flex-col justify-between overflow-hidden", isSidebarVisible ? "max-w-[300px]" : "max-w-0 p-0")}>
             <div className="px-8">
-                <Image width="152" height="25" alt="Kanban" src="/logo-dark.svg" className="mb-13 dark:hidden" />
-                <Image width="152" height="25" alt="Kanban" src="/logo-light.svg" className="mb-13 hidden dark:block" />
+                <Image loading="eager" width="152" height="25" alt="Kanban" src="/logo-dark.svg" className="mb-13 dark:hidden" />
+                <Image loading="eager" width="152" height="25" alt="Kanban" src="/logo-light.svg" className="mb-13 hidden dark:block" />
             </div>
 
             <BoardList />
