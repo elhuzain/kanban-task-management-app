@@ -1,8 +1,11 @@
 'use client';
-import { createContext, createElement, useContext, useState, type ReactNode } from "react";
+import { createContext, createElement, useContext, useEffect, useState, type ReactNode } from "react";
+import { getBoards, getSelectedBoardId, saveBoards, saveSelectedBoardId } from "@/lib/storage";
 
 type ContainerContextValue = {
     boards: Board[];
+    /** False until boards have been loaded from localStorage on the client. */
+    isLoaded: boolean;
     /** All tasks across every board and column (flattened, read-only view). */
     tasks: Task[];
     /** The currently selected board, or undefined if none is selected. */
@@ -89,9 +92,35 @@ const updateTask = (boards: Board[], taskId: string, update: (task: Task) => Tas
 const ContainerContext = createContext<ContainerContextValue | null>(null);
 
 export const ContainerProvider = ({ children }: { children: ReactNode }) => {
-    const [boards, setBoards] = useState<Board[]>(initialBoards);
-    const [selectedBoardId, setSelectedBoardId] = useState<string | undefined>(initialBoards[0]?.id);
+    // Start empty: localStorage isn't available during server rendering, so the stored
+    // boards are loaded after mount to keep the first client render identical to the server's.
+    const [boards, setBoards] = useState<Board[]>([]);
+    const [selectedBoardId, setSelectedBoardId] = useState<string | undefined>(undefined);
+    const [isLoaded, setIsLoaded] = useState(false);
     const [isSidebarVisible, setIsSidebarVisible] = useState<boolean>(true);
+
+    // Load once on mount. First visit (nothing stored) falls back to the sample boards.
+    useEffect(() => {
+        const storedBoards = getBoards() ?? initialBoards;
+        const storedSelectedId = getSelectedBoardId();
+
+        setBoards(storedBoards);
+        setSelectedBoardId(
+            storedBoards.some((board) => board.id === storedSelectedId)
+                ? storedSelectedId!
+                : storedBoards[0]?.id
+        );
+        setIsLoaded(true);
+    }, []);
+
+    // Persist after loading; guarded so the empty pre-load state never overwrites stored data.
+    useEffect(() => {
+        if (isLoaded) saveBoards(boards);
+    }, [boards, isLoaded]);
+
+    useEffect(() => {
+        if (isLoaded) saveSelectedBoardId(selectedBoardId);
+    }, [selectedBoardId, isLoaded]);
 
     const selectedBoard = boards.find((board) => board.id === selectedBoardId);
 
@@ -287,7 +316,7 @@ export const ContainerProvider = ({ children }: { children: ReactNode }) => {
     return createElement(
         ContainerContext.Provider,
         {
-            value: { boards, tasks, selectedBoard, selectBoard, createBoard, addColumn, createTask, setStatus, moveTask, editTask, deleteTask, addSubtask, checkSubtask, isSidebarVisible, hideSidebar, showSidebar },
+            value: { boards, isLoaded, tasks, selectedBoard, selectBoard, createBoard, addColumn, createTask, setStatus, moveTask, editTask, deleteTask, addSubtask, checkSubtask, isSidebarVisible, hideSidebar, showSidebar },
         },
         children
     );

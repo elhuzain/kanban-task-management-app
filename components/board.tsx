@@ -6,7 +6,12 @@ import Column from "./column";
 import AddColumnButton from "./addColumnButton";
 
 const Board = () => {
-    const { selectedBoard, boards, moveTask } = useContainer();
+    const { selectedBoard, boards, moveTask, isLoaded } = useContainer();
+
+    // Avoid flashing the empty state while stored boards are loading
+    if (!isLoaded) {
+        return <div className="w-full h-full bg-bg-deep" />
+    }
 
     if (!selectedBoard || boards.length === 0) {
         return <div>
