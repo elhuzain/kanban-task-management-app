@@ -6,7 +6,7 @@ import { ContainerProvider } from "@/providers/container";
 export default function Home() {
   return (
     <ContainerProvider>
-      <main className="flex min-h-screen w-full">
+      <main className="flex h-screen w-full">
         <Sidebar />
 
         <div className="w-full flex-1 flex flex-col overflow-hidden">
