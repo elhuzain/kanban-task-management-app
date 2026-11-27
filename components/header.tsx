@@ -18,7 +18,7 @@ const Header = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     return <header className="w-full h-[96px] bg-bg px-8 flex items-center justify-between border-b border-lines">
-        <div className="flex items-center gap-4">
+        <div className="flex sm:hidden items-center gap-4">
             <Image width={24} height={24} src="/logo-mobile.svg" alt="Kanban Task Management" />
 
             <Popover open={isMenuOpen} onOpenChange={setIsMenuOpen}>

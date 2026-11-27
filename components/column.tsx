@@ -1,5 +1,6 @@
 import { Draggable, Droppable } from "@hello-pangea/dnd";
 import Task from "./task"
+import { cn } from "@/lib/utils";
 
 const Column = ({ column }: { column: Column }) => {
     return <div className="min-w-[280px] max-w-[280px] flex flex-col gap-6">
@@ -9,7 +10,11 @@ const Column = ({ column }: { column: Column }) => {
                 <div
                     ref={droppableProvided.innerRef}
                     {...droppableProvided.droppableProps}
-                    className={`flex flex-col flex-1 min-h-24 rounded-sm transition-colors duration-200 ${droppableSnapshot.isDraggingOver ? "bg-lines/40" : ""}`}
+                    className={cn(
+                        "flex flex-col flex-1 min-h-24 rounded-sm transition-colors duration-200",
+                        column.tasks.length === 0 && "border-2 border-dashed border-lines",
+                        droppableSnapshot.isDraggingOver && "bg-lines/40"
+                    )}
                 >
                     {column.tasks.map((task, index) => (
                         <Draggable key={task.id} draggableId={task.id} index={index}>
